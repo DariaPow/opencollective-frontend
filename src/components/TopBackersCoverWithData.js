@@ -30,25 +30,23 @@ class TopBackersCoverWithData extends React.Component {
     };
   }
 
-  renderOrganization(member, index) {
-    const org = member.member;
-    const percentage = Math.round(
-      (member.stats.totalDonations /
-        this.props.collective.stats.totalAmountReceived) *
-        100,
-    );
-    let title = `${org.name}`;
-    if (org.description) {
-      title += `
-${org.description}
-`;
-    }
-    title += `
-Financial contribution: ${percentage}% (${formatCurrency(
-      member.stats.totalDonations,
+  renderMemberTitle(memberObj) {
+    const member = memberObj.member;
+    const amount = formatCurrency(
+      memberObj.stats.totalDonations,
       this.props.collective.currency,
       { precision: 0 },
-    )})`;
+    );
+
+    const title = member.name;
+    const subtitle = member.description ? `\n${member.description}\n` : '';
+    const financialContributionTxt = `Financial contribution: ${amount}`;
+    return `${title}${subtitle}\n${financialContributionTxt}`;
+  }
+
+  renderOrganization(member, index) {
+    const org = member.member;
+
     const className = index >= 5 ? 'desktopOnly' : '';
     return (
       <div key={`topBacker-${index}`} className={className}>
@@ -69,7 +67,7 @@ Financial contribution: ${percentage}% (${formatCurrency(
               }
             `}
           </style>
-          <Link route={`/${org.slug}`} title={title}>
+          <Link route={`/${org.slug}`} title={this.renderMemberTitle(member)}>
             <Logo src={org.image} height={36} />
           </Link>
         </div>
@@ -80,27 +78,10 @@ Financial contribution: ${percentage}% (${formatCurrency(
   renderUser(member, index) {
     const user = member.member;
 
-    const percentage = Math.round(
-      (member.stats.totalDonations /
-        this.props.collective.stats.totalAmountReceived) *
-        100,
-    );
-    let title = `${user.name}`;
-    if (user.description) {
-      title += `
-${user.description}
-`;
-    }
-    title += `
-Financial contribution: ${percentage}% (${formatCurrency(
-      member.stats.totalDonations,
-      this.props.collective.currency,
-      { precision: 0 },
-    )})`;
     const className = index >= 5 ? 'desktopOnly' : '';
     return (
       <div key={`topBacker-${index}`} className={`user backer ${className}`}>
-        <Link route={`/${user.slug}`} title={title}>
+        <Link route={`/${user.slug}`} title={this.renderMemberTitle(member)}>
           <Avatar src={user.image} radius={48} className="noFrame" />
         </Link>
       </div>
